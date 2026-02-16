@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Postura V3</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Postura V3 – Family Edition</h1>
+
+<div class="top-bar">
+    <label>Profile:</label>
+    <select id="profileSelect">
+        <option value="Father">Father</option>
+        <option value="Mother">Mother</option>
+        <option value="Child">Child</option>
+    </select>
+
+    <button id="connectBtn">Connect</button>
+    <span id="connectionStatus">Disconnected</span>
+</div>
+
+<div class="dashboard">
+
+    <h2 id="activeProfile">Father Dashboard</h2>
+
+    <p>Angle: <span id="angle">0</span>°</p>
+    <p>Status: <span id="status">-</span></p>
+    <p>Slouch Count: <span id="count">0</span></p>
+    <p>Total Slouch Time: <span id="time">0</span> sec</p>
+    <p>Posture Score: <span id="score">100</span></p>
+
+    <label>Sensitivity:</label>
+    <input type="range" id="thresholdSlider" min="5" max="30" value="10">
+    <span id="thresholdValue">10</span>°
+
+    <br><br>
+    <button id="resetBtn">Reset Session</button>
+
+</div>
+
+<script src="storage.js"></script>
+<script src="profiles.js"></script>
+<script src="ble.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
