@@ -1,7 +1,10 @@
 function handleData(event) {
     const decoder = new TextDecoder();
     const value = decoder.decode(event.target.value);
+
     const parts = value.split(",");
+
+    if (parts.length !== 5) return;
 
     const data = {
         angle: parts[0],
@@ -24,7 +27,13 @@ function updateUI(data) {
 }
 
 function resetUI() {
-    updateUI({ angle: 0, count: 0, time: 0, status: "-", score: 100 });
+    updateUI({
+        angle: 0,
+        count: 0,
+        time: 0,
+        status: "-",
+        score: 100
+    });
 }
 
 document.getElementById("connectBtn").addEventListener("click", connectBLE);
@@ -36,5 +45,6 @@ document.getElementById("resetBtn").addEventListener("click", function () {
 
 document.getElementById("thresholdSlider").addEventListener("input", function () {
     document.getElementById("thresholdValue").innerText = this.value;
+    saveThreshold(currentProfile, this.value);
     sendCommand("TH:" + this.value);
 });
