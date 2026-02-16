@@ -1,7 +1,9 @@
 function handleData(event) {
+
+    if (ignoreBLE) return;  // prevent overwrite during profile switching
+
     const decoder = new TextDecoder();
     const value = decoder.decode(event.target.value);
-
     const parts = value.split(",");
 
     if (parts.length !== 5) return;
