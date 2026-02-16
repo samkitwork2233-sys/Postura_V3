@@ -1,6 +1,14 @@
+window.currentSessionData = {
+    angle: 0,
+    count: 0,
+    time: 0,
+    status: "-",
+    score: 100
+};
+
 function handleData(event) {
 
-    if (ignoreBLE) return;  // prevent overwrite during profile switching
+    if (ignoreBLE) return;
 
     const decoder = new TextDecoder();
     const value = decoder.decode(event.target.value);
@@ -16,8 +24,9 @@ function handleData(event) {
         score: parts[4]
     };
 
+    window.currentSessionData = data;
+
     updateUI(data);
-    saveProfileData(currentProfile, data);
 }
 
 function updateUI(data) {
@@ -29,13 +38,16 @@ function updateUI(data) {
 }
 
 function resetUI() {
-    updateUI({
+    const resetData = {
         angle: 0,
         count: 0,
         time: 0,
         status: "-",
         score: 100
-    });
+    };
+
+    window.currentSessionData = resetData;
+    updateUI(resetData);
 }
 
 document.getElementById("connectBtn").addEventListener("click", connectBLE);
@@ -43,10 +55,4 @@ document.getElementById("connectBtn").addEventListener("click", connectBLE);
 document.getElementById("resetBtn").addEventListener("click", function () {
     sendCommand("RESET");
     resetUI();
-});
-
-document.getElementById("thresholdSlider").addEventListener("input", function () {
-    document.getElementById("thresholdValue").innerText = this.value;
-    saveThreshold(currentProfile, this.value);
-    sendCommand("TH:" + this.value);
 });
