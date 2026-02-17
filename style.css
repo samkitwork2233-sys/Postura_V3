@@ -1,28 +1,39 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #f4f6f8;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 20px;
 }
 
 .top-bar {
-    margin: 20px;
+  margin: 20px;
 }
 
-.dashboard {
-    background: white;
-    width: 350px;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+.card {
+  background: white;
+  width: 350px;
+  margin: auto;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.sliderBox {
+  margin: 15px 0;
 }
 
 button {
-    padding: 8px 12px;
-    margin: 5px;
-    cursor: pointer;
+  padding: 8px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #1e88e5;
+  color: white;
 }
 
-select {
-    padding: 5px;
+button:hover {
+  background: #1565c0;
 }
