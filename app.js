@@ -1,86 +1,103 @@
-window.currentSessionData = {
-    angle: 0,
-    status: "GOOD",
-    slouchCount: 0,
-    totalSlouchTime: 0,
-    score: 100
+const SERVICE_UUID = "12345678-1234-1234-1234-1234567890ab";
+const CHARACTERISTIC_UUID = "abcdefab-1234-1234-1234-abcdefabcdef";
+
+let device;
+let characteristic;
+
+let profiles = {
+  Father: createNewProfile(),
+  Mother: createNewProfile(),
+  Child: createNewProfile()
 };
 
-let lastStatus = "GOOD";
-let slouchStartTime = null;
-let ignoreBLE = false;
+let currentProfile = "Father";
+
+function createNewProfile() {
+  return {
+    slouchCount: 0,
+    totalSlouchTime: 0,
+    score: 100,
+    threshold: 10,
+    isSlouching: false,
+    slouchStart: 0
+  };
+}
+
+document.getElementById("profileSelect").addEventListener("change", function () {
+  currentProfile = this.value;
+  document.getElementById("dashboardTitle").innerText = currentProfile + " Dashboard";
+  loadProfileData();
+});
+
+function loadProfileData() {
+  let p = profiles[currentProfile];
+  document.getElementById("slouchCount").innerText = p.slouchCount;
+  document.getElementById("slouchTime").innerText = p.totalSlouchTime;
+  document.getElementById("postureScore").innerText = p.score;
+  document.getElementById("sensitivity").value = p.threshold;
+  document.getElementById("sensitivityValue").innerText = p.threshold;
+}
+
+document.getElementById("connectBtn").addEventListener("click", async () => {
+  try {
+    device = await navigator.bluetooth.requestDevice({
+      filters: [{ services: [SERVICE_UUID] }]
+    });
+
+    const server = await device.gatt.connect();
+    const service = await server.getPrimaryService(SERVICE_UUID);
+    characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+    document.getElementById("connectionStatus").innerText = "Connected";
+
+    characteristic.startNotifications();
+    characteristic.addEventListener("characteristicvaluechanged", handleData);
+
+  } catch (error) {
+    alert("Connection Failed");
+  }
+});
 
 function handleData(event) {
+  let value = new TextDecoder().decode(event.target.value);
+  let angle = parseFloat(value);
 
-    if (ignoreBLE) return;
+  if (isNaN(angle)) return;
 
-    const decoder = new TextDecoder();
-    const value = decoder.decode(event.target.value);
-    const parts = value.split(",");
+  document.getElementById("angle").innerText = angle;
 
-    if (parts.length !== 5) return;
+  let p = profiles[currentProfile];
 
-    const angle = parts[0];
-    const status = parts[3];   // GOOD or BAD
+  if (angle > p.threshold) {
+    document.getElementById("postureStatus").innerText = "Slouching";
 
-    window.currentSessionData.angle = angle;
-
-    // Detect transition GOOD → BAD
-    if (lastStatus === "GOOD" && status === "BAD") {
-        window.currentSessionData.slouchCount++;
-        slouchStartTime = Date.now();
+    if (!p.isSlouching) {
+      p.slouchCount++;
+      p.slouchStart = Date.now();
+      p.isSlouching = true;
     }
+  } else {
+    document.getElementById("postureStatus").innerText = "Good";
 
-    // Detect transition BAD → GOOD
-    if (lastStatus === "BAD" && status === "GOOD" && slouchStartTime) {
-        const duration = Math.floor((Date.now() - slouchStartTime) / 1000);
-        window.currentSessionData.totalSlouchTime += duration;
-        slouchStartTime = null;
+    if (p.isSlouching) {
+      let duration = Math.floor((Date.now() - p.slouchStart) / 1000);
+      p.totalSlouchTime += duration;
+      p.isSlouching = false;
     }
+  }
 
-    window.currentSessionData.status = status;
+  p.score = Math.max(100 - p.totalSlouchTime, 0);
 
-    // Calculate score
-    let score = 100 - (window.currentSessionData.slouchCount * 5);
-    if (score < 0) score = 0;
-
-    window.currentSessionData.score = score;
-
-    updateUI(window.currentSessionData);
-    saveProfileData(currentProfile, window.currentSessionData);
-
-    lastStatus = status;
+  loadProfileData();
 }
 
-function updateUI(data) {
-    document.getElementById("angle").innerText = data.angle;
-    document.getElementById("count").innerText = data.slouchCount;
-    document.getElementById("time").innerText = data.totalSlouchTime;
-    document.getElementById("status").innerText = data.status;
-    document.getElementById("score").innerText = data.score;
-}
+document.getElementById("sensitivity").addEventListener("input", function () {
+  let value = parseInt(this.value);
+  profiles[currentProfile].threshold = value;
+  document.getElementById("sensitivityValue").innerText = value;
+});
 
-function resetUI() {
-    window.currentSessionData = {
-        angle: 0,
-        status: "GOOD",
-        slouchCount: 0,
-        totalSlouchTime: 0,
-        score: 100
-    };
-    updateUI(window.currentSessionData);
-}
-
-document.getElementById("connectBtn").addEventListener("click", connectBLE);
-
-document.getElementById("resetBtn").addEventListener("click", function () {
-    window.currentSessionData = {
-        angle: 0,
-        status: "GOOD",
-        slouchCount: 0,
-        totalSlouchTime: 0,
-        score: 100
-    };
-    sendCommand("RESET");
-    updateUI(window.currentSessionData);
+document.getElementById("resetBtn").addEventListener("click", () => {
+  profiles[currentProfile] = createNewProfile();
+  loadProfileData();
 });
