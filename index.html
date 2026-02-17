@@ -1,45 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Postura V3 – Family Edition</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Postura V3 – Family Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <h1>Postura V3 – Family Edition</h1>
 
 <div class="top-bar">
-    <label>Profile:</label>
-    <select id="profileSelect">
-        <option value="Father">Father</option>
-        <option value="Mother">Mother</option>
-        <option value="Child">Child</option>
-    </select>
+  <label>Profile:</label>
+  <select id="profileSelect">
+    <option value="Father">Father</option>
+    <option value="Mother">Mother</option>
+    <option value="Child">Child</option>
+  </select>
 
-    <button id="connectBtn">Connect</button>
-    <span id="connectionStatus">Disconnected</span>
+  <button id="connectBtn">Connect</button>
+  <span id="connectionStatus">Disconnected</span>
 </div>
 
-<div class="dashboard">
-    <h2 id="activeProfile">Father Dashboard</h2>
+<div class="card">
+  <h2 id="dashboardTitle">Father Dashboard</h2>
 
-    <p>Angle: <span id="angle">0</span>°</p>
-    <p>Status: <span id="status">-</span></p>
-    <p>Slouch Count: <span id="count">0</span></p>
-    <p>Total Slouch Time: <span id="time">0</span> sec</p>
-    <p>Posture Score: <span id="score">100</span></p>
+  <p>Angle: <span id="angle">0</span>°</p>
+  <p>Status: <span id="postureStatus">-</span></p>
+  <p>Slouch Count: <span id="slouchCount">0</span></p>
+  <p>Total Slouch Time: <span id="slouchTime">0</span> sec</p>
+  <p>Posture Score: <span id="postureScore">100</span></p>
 
+  <div class="sliderBox">
     <label>Sensitivity:</label>
-    <input type="range" id="thresholdSlider" min="5" max="30" value="10">
-    <span id="thresholdValue">10</span>°
+    <input type="range" id="sensitivity" min="5" max="30" value="10">
+    <span id="sensitivityValue">10</span>°
+  </div>
 
-    <br><br>
-    <button id="resetBtn">Reset Session</button>
+  <button id="resetBtn">Reset Session</button>
 </div>
 
-<script src="storage.js"></script>
-<script src="profiles.js"></script>
-<script src="ble.js"></script>
 <script src="app.js"></script>
 
 </body>
